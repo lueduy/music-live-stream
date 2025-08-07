@@ -1,13 +1,8 @@
-FROM ubuntu:20.04
+#!/bin/bash
 
-RUN apt-get update && \
-    apt-get install -y ffmpeg && \
-    apt-get install -y dos2unix
-
-WORKDIR /app
-
-COPY . /app
-
-RUN dos2unix entrypoint.sh && chmod +x entrypoint.sh
-
-CMD ["bash", "entrypoint.sh"]
+ffmpeg -re -stream_loop -1 -f concat -safe 0 -i playlist.txt \
+-loop 1 -i background.png \
+-c:a aac -b:a 192k \
+-c:v libx264 -preset veryfast -tune stillimage \
+-pix_fmt yuv420p -shortest \
+-f flv "rtmp://a.rtmp.youtube.com/live2/733a-5hdz-gzf1-xjrz-5av6"
